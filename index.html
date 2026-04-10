@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Respiratory Examination Mastery</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card-hover: #1a2332;
+    --border: #1e293b;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.15);
+    --orange: #f59e0b;
+    --orange-glow: rgba(245, 158, 11, 0.15);
+    --red: #ef4444;
+    --purple: #a855f7;
+    --purple-glow: rgba(168, 85, 247, 0.15);
+    --pink: #ec4899;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-bright: #f8fafc;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(180deg, rgba(59,130,246,0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-glow);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #3b82f6, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    color: var(--text-dim);
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .nav-tab:hover { border-color: var(--accent); color: var(--text); }
+  .nav-tab.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* SECTIONS */
+  .section { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  /* MASTER MNEMONIC */
+  .master-mnemonic {
+    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(168,85,247,0.1));
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+  .master-mnemonic h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+  }
+  .master-mnemonic .subtitle {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .mnemonic-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .mnemonic-letter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .mnemonic-letter .letter {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .mnemonic-letter .word {
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 0.9rem;
+  }
+  .mnemonic-letter .desc {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+  }
+
+  /* STEP CARDS */
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .step-card:hover { border-color: rgba(59,130,246,0.3); }
+  .step-header {
+    padding: 18px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    user-select: none;
+  }
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .step-header-text h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+  .step-header-text .step-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .step-chevron {
+    margin-left: auto;
+    color: var(--text-dim);
+    transition: transform 0.3s;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .step-card.open .step-chevron { transform: rotate(180deg); }
+  .step-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .step-card.open .step-body { max-height: 3000px; }
+  .step-content {
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  /* INNER CARDS */
+  .what-to-do, .smart-tip, .never-forget, .clinical-pearl, .examiner-loves {
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 0.88rem;
+  }
+  .what-to-do {
+    background: rgba(59,130,246,0.08);
+    border-left: 3px solid var(--accent);
+  }
+  .smart-tip {
+    background: rgba(16,185,129,0.08);
+    border-left: 3px solid var(--green);
+  }
+  .never-forget {
+    background: rgba(245,158,11,0.08);
+    border-left: 3px solid var(--orange);
+  }
+  .clinical-pearl {
+    background: rgba(168,85,247,0.08);
+    border-left: 3px solid var(--purple);
+  }
+  .examiner-loves {
+    background: rgba(236,72,153,0.08);
+    border-left: 3px solid var(--pink);
+  }
+  .inner-label {
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .what-to-do .inner-label { color: var(--accent); }
+  .smart-tip .inner-label { color: var(--green); }
+  .never-forget .inner-label { color: var(--orange); }
+  .clinical-pearl .inner-label { color: var(--purple); }
+  .examiner-loves .inner-label { color: var(--pink); }
+
+  .step-content ul {
+    padding-left: 18px;
+    margin: 8px 0;
+  }
+  .step-content li {
+    margin-bottom: 6px;
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+  .step-content li strong { color: var(--text-bright); }
+
+  /* FINDINGS TABLE */
+  .findings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.82rem;
+  }
+  .findings-table th {
+    background: rgba(59,130,246,0.12);
+    color: var(--accent);
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .findings-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .findings-table tr:last-child td { border-bottom: none; }
+  .findings-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* QUIZ MODE */
+  .quiz-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .quiz-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 14px;
+  }
+  .quiz-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+    color: var(--text);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .quiz-option:hover { border-color: var(--accent); background: var(--accent-glow); }
+  .quiz-option.correct { border-color: var(--green); background: var(--green-glow); color: var(--green); }
+  .quiz-option.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: var(--red); }
+  .quiz-explanation {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: rgba(168,85,247,0.08);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text);
+    display: none;
+  }
+
+  /* CHECKLIST */
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.88rem;
+    user-select: none;
+  }
+  .checklist-item:hover { border-color: rgba(59,130,246,0.3); }
+  .checklist-item.checked {
+    opacity: 0.5;
+    text-decoration: line-through;
+    border-color: var(--green);
+  }
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--text-dim);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 0.7rem;
+  }
+  .checklist-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .checklist-progress {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .progress-bar-bg {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 4px;
+    transition: width 0.4s;
+    width: 0%;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+  }
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+  }
+
+  /* color classes for step numbers */
+  .bg-blue { background: var(--accent-glow); color: var(--accent); }
+  .bg-green { background: var(--green-glow); color: var(--green); }
+  .bg-orange { background: var(--orange-glow); color: var(--orange); }
+  .bg-purple { background: var(--purple-glow); color: var(--purple); }
+  .bg-pink { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .bg-red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+  .highlight { color: var(--accent); font-weight: 600; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .hero { padding: 40px 16px 28px; }
+    .section { padding: 16px; }
+    .step-header { padding: 14px 16px; }
+    .step-content { padding: 0 16px 16px; padding-top: 14px; }
+  }
+
+  /* Smooth scroll */
+  html { scroll-behavior: smooth; }
+
+  .reset-btn {
+    display: inline-block;
+    padding: 8px 18px;
+    background: rgba(239,68,68,0.12);
+    color: var(--red);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    font-family: inherit;
+  }
+  .reset-btn:hover { background: rgba(239,68,68,0.2); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">5th Year Medicine</div>
+  <h1>Respiratory Examination Mastery</h1>
+  <p>Every step. Every trick. Every way to look like you were born doing this.</p>
+</div>
+
+<!-- NAV -->
+<div class="nav-tabs" id="navTabs">
+  <div class="nav-tab active" data-tab="overview">The System</div>
+  <div class="nav-tab" data-tab="steps">Step-by-Step</div>
+  <div class="nav-tab" data-tab="findings">Findings Map</div>
+  <div class="nav-tab" data-tab="smart">Look Smart</div>
+  <div class="nav-tab" data-tab="quiz">Test Yourself</div>
+  <div class="nav-tab" data-tab="checklist">Quick Run</div>
+</div>
+
+<!-- ============ SECTION 1: OVERVIEW ============ -->
+<div class="section active" id="overview">
+  <div class="master-mnemonic">
+    <h2>The Master Mnemonic: "I SING PPAP"</h2>
+    <div class="subtitle">This is your entire exam. Burn it in.</div>
+    <div class="mnemonic-grid">
+      <div class="mnemonic-letter">
+        <div class="letter bg-blue">I</div>
+        <div><div class="word">Introduce + Inspect (general)</div><div class="desc">Consent, position 45 deg, scan bedside clues</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-green">S</div>
+        <div><div class="word">Scan from End of Bed</div><div class="desc">Shape, scars, symmetry, breathing pattern, RR</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-orange">I</div>
+        <div><div class="word">Inspect Hands</div><div class="desc">Clubbing, tar stain, cyanosis, tremor, flap</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-purple">N</div>
+        <div><div class="word">Neck + Face</div><div class="desc">Anaemia, cyanosis, Horner's, JVP, trachea, cricosternal distance, lymph nodes</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-pink">G</div>
+        <div><div class="word">Go to Anterior Chest</div><div class="desc">Palpate, Percuss, Auscultate (always compare R vs L)</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-blue">P</div>
+        <div><div class="word">Posterior Chest</div><div class="desc">Sit forward &rarr; Inspect, Palpate, Percuss, Auscultate</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-green">P</div>
+        <div><div class="word">Peripheral check</div><div class="desc">Sacral + ankle oedema, calves (DVT)</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-orange">A</div>
+        <div><div class="word">Ask to complete</div><div class="desc">"I would like to check SpO2, sputum pot, peak flow, and see the CXR"</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-purple">P</div>
+        <div><div class="word">Present your findings</div><div class="desc">Summarise, give differential, suggest investigations</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="master-mnemonic" style="border-color: rgba(16,185,129,0.2); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.05));">
+    <h2>The Golden Rule of Chest Exam</h2>
+    <div class="subtitle" style="color: var(--green);">At every zone: ALWAYS compare Right vs Left before moving down</div>
+    <p style="font-size: 0.9rem; color: var(--text);">This single habit separates an average student from a polished clinician. Whether you're percussing, auscultating, or checking expansion &mdash; <strong style="color:var(--text-bright)">side-to-side, then top-to-bottom</strong>. The examiner will notice.</p>
+  </div>
+
+  <div class="master-mnemonic" style="border-color: rgba(245,158,11,0.2); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.05));">
+    <h2>The "Chest PPA" Mini-Mnemonic</h2>
+    <div class="subtitle" style="color: var(--orange);">For both anterior AND posterior chest, do this sequence:</div>
+    <div class="mnemonic-grid">
+      <div class="mnemonic-letter">
+        <div class="letter bg-orange">P</div>
+        <div><div class="word">Palpate</div><div class="desc">Expansion (upper + lower), apex beat (anterior only)</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-orange">P</div>
+        <div><div class="word">Percuss</div><div class="desc">Supraclavicular &rarr; down, R vs L, then axillae</div></div>
+      </div>
+      <div class="mnemonic-letter">
+        <div class="letter bg-orange">A</div>
+        <div><div class="word">Auscultate + VR</div><div class="desc">Breath sounds, then vocal resonance ("one, one, one")</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SECTION 2: STEP-BY-STEP ============ -->
+<div class="section" id="steps">
+  <div class="section-title">The Full Walkthrough</div>
+  <div class="section-desc">Tap any step to expand. Every detail you need to ace it.</div>
+
+  <!-- STEP 0 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-blue">0</div>
+      <div class="step-header-text">
+        <h3>Before You Touch the Patient</h3>
+        <div class="step-subtitle">Setup, consent, positioning &mdash; this is where marks start</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">What to do</div>
+        <ul>
+          <li><strong>Wash hands / gel</strong> visibly &mdash; walk to the gel dispenser so they see it.</li>
+          <li><strong>Introduce:</strong> "Hello, my name is Turki, I'm a 5th year medical student. I've been asked to examine your chest today &mdash; would that be alright?"</li>
+          <li><strong>Position:</strong> Reclined at <strong>45 degrees</strong>, head on pillow, chest exposed from waist up.</li>
+          <li><strong>Ask about pain</strong> before touching: "Is there any tenderness I should know about?"</li>
+        </ul>
+      </div>
+      <div class="examiner-loves">
+        <div class="inner-label">Examiner loves this</div>
+        Asking about pain first shows you're a safe clinician. Also, <strong>glance around the bedside</strong> and verbally note: "I can see oxygen tubing, an inhaler, and a sputum pot at the bedside" &mdash; instant marks for observation skills.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-green">1</div>
+      <div class="step-header-text">
+        <h3>End-of-Bed Inspection</h3>
+        <div class="step-subtitle">Stand back. This 15 seconds wins you 5+ marks.</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Scan for (mnemonic: "SCAR-BAP")</div>
+        <ul>
+          <li><strong>S</strong>cars &mdash; thoracotomy (lateral!), sternotomy, chest drain</li>
+          <li><strong>C</strong>hest shape &mdash; barrel chest (COPD), pectus excavatum/carinatum, kyphoscoliosis</li>
+          <li><strong>A</strong>symmetry &mdash; one side smaller/flatter?</li>
+          <li><strong>R</strong>espiratory rate &mdash; count silently for 15s &times; 4 (normal 12-15/min)</li>
+          <li><strong>B</strong>reathing pattern &mdash; pursed-lip? I:E ratio prolonged? Cheyne-Stokes?</li>
+          <li><strong>A</strong>ccessory muscles &mdash; SCM, scalenes, tripod position, intercostal indrawing</li>
+          <li><strong>P</strong>araphernalia &mdash; O2, nebulisers, inhalers, sputum pot, drains</li>
+        </ul>
+      </div>
+      <div class="smart-tip">
+        <div class="inner-label">Trick: Counting RR secretly</div>
+        Pretend to check the radial pulse &mdash; hold the wrist and count breaths. The patient won't consciously change their breathing pattern. <strong>Say the rate out loud</strong>: "Respiratory rate is 22 breaths per minute." Examiners love hearing you quantify.
+      </div>
+      <div class="clinical-pearl">
+        <div class="inner-label">Clinical pearl</div>
+        A <strong>barrel chest</strong> (increased AP diameter) = chronic hyperinflation (COPD). If you see it, also expect: reduced cricosternal distance, loss of cardiac dullness, quiet breath sounds, and Hoover's sign on expansion.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-orange">2</div>
+      <div class="step-header-text">
+        <h3>Hands &amp; Arms</h3>
+        <div class="step-subtitle">Clubbing, tar, tremor, flap &mdash; a goldmine of clues</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Examination sequence (mnemonic: "Club-Tar-Cyan-TF")</div>
+        <ul>
+          <li><strong>Clubbing</strong> &mdash; look at nail profile from the side. Press nail bed: feel boggy fluctuation? Loss of the diamond-shaped window when opposing nails = Schamroth's sign.</li>
+          <li><strong>Tar staining</strong> &mdash; yellow-brown on index/middle fingers = active smoker.</li>
+          <li><strong>Cyanosis</strong> &mdash; peripheral cyanosis in nail beds. Also check small muscle wasting (T1 lesion &rarr; Pancoast tumour).</li>
+          <li><strong>Tremor</strong> &mdash; arms out, wrists extended. Fine tremor = beta-agonist overuse (salbutamol).</li>
+          <li><strong>Flapping tremor (asterixis)</strong> &mdash; wrists dorsiflexed, fingers apart, eyes closed, hold 30 seconds. Coarse flap = CO2 retention = respiratory failure.</li>
+        </ul>
+      </div>
+      <div class="never-forget">
+        <div class="inner-label">Never forget</div>
+        <strong>Respiratory causes of clubbing:</strong> lung cancer (most common!), pulmonary fibrosis, bronchiectasis, cystic fibrosis, empyema, mesothelioma. If you find clubbing, say: "I would be concerned about underlying malignancy or fibrotic lung disease."
+      </div>
+      <div class="examiner-loves">
+        <div class="inner-label">Look smart tip</div>
+        While checking flap, you're also <strong>secretly timing the respiratory rate</strong> (if you haven't already). Two birds, one stone. Mention it.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-purple">3</div>
+      <div class="step-header-text">
+        <h3>Face</h3>
+        <div class="step-subtitle">Eyes, tongue, pupils &mdash; 30 seconds, multiple diagnoses</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Check these (mnemonic: "ACH")</div>
+        <ul>
+          <li><strong>A</strong>naemia &mdash; pull down lower eyelid, check conjunctival pallor. (Anaemia can cause breathlessness!)</li>
+          <li><strong>C</strong>yanosis &mdash; look at the <strong>tongue</strong> (central cyanosis = blue-grey). The tongue is the best place &mdash; not lips, which can be dark naturally.</li>
+          <li><strong>H</strong>orner's syndrome &mdash; ptosis + miosis + anhidrosis. Think Pancoast tumour at lung apex invading sympathetic chain.</li>
+        </ul>
+      </div>
+      <div class="smart-tip">
+        <div class="inner-label">Bonus: SVC obstruction</div>
+        Dusky, swollen face with engorged neck veins + non-pulsatile raised JVP = <strong>SVC obstruction</strong> from mediastinal malignancy. If you spot it, mention it &mdash; examiners will be very impressed.
+      </div>
+      <div class="clinical-pearl">
+        <div class="inner-label">Clinical pearl</div>
+        Central cyanosis is <strong>harder to detect in anaemia</strong> (less Hb to be desaturated) and <strong>easier in polycythaemia</strong>. If the patient is plethoric and cyanosed, think COPD with secondary polycythaemia.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-pink">4</div>
+      <div class="step-header-text">
+        <h3>Neck</h3>
+        <div class="step-subtitle">JVP, trachea, cricosternal distance, lymph nodes</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Examination sequence (mnemonic: "JTC-L")</div>
+        <ul>
+          <li><strong>J</strong>VP &mdash; with tangential lighting, assess height. Raised in pulmonary hypertension, tension pneumothorax, massive PE, cor pulmonale.</li>
+          <li><strong>T</strong>rachea &mdash; gently advance ONE finger into the sternal notch in midline. Is it central? Equidistant from both SCM heads?</li>
+          <li><strong>C</strong>ricosternal distance &mdash; feel from sternal notch up to cricoid cartilage. <strong>Normal = 3 finger breadths.</strong> Reduced = hyperinflation (COPD).</li>
+          <li><strong>L</strong>ymph nodes &mdash; from behind, palpate cervical chain. Palpable nodes = think metastatic lung cancer, TB, lymphoma.</li>
+        </ul>
+      </div>
+      <div class="never-forget">
+        <div class="inner-label">Tracheal deviation rules</div>
+        <strong>Pushed AWAY from:</strong> tension pneumothorax, massive pleural effusion.<br>
+        <strong>Pulled TOWARDS:</strong> lung collapse, fibrotic scarring, post-pneumonectomy.<br>
+        Remember: <em>"Tension pushes, collapse pulls."</em>
+      </div>
+      <div class="examiner-loves">
+        <div class="inner-label">Look smart tip</div>
+        When checking trachea, <strong>warn the patient first</strong>: "This may feel slightly uncomfortable." Then use ONE finger, gently. Examiners mark you down for being rough. Say: "The trachea is central" (or deviated).
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-blue">5</div>
+      <div class="step-header-text">
+        <h3>Anterior Chest: Palpation</h3>
+        <div class="step-subtitle">Apex beat, RV heave, expansion &mdash; the hands-on core</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Sequence</div>
+        <ul>
+          <li><strong>Apex beat</strong> &mdash; locate in 5th ICS, mid-clavicular line. Displaced? Think effusion (pushes away) or collapse (pulls towards).</li>
+          <li><strong>RV heave</strong> &mdash; place heel of hand over lower sternum. A sustained lift = pulmonary hypertension / cor pulmonale.</li>
+          <li><strong>Expansion UPPER zones</strong> &mdash; palms over pectoral region, thumbs opposed in midline. "Take a deep breath." Watch thumbs separate.</li>
+          <li><strong>Expansion LOWER zones</strong> &mdash; cup hands around lower ribs, fingertips in mid-axillary line, pull skin medially, thumbs off skin. Watch thumbs separate.</li>
+          <li><strong>Compare symmetry</strong> &mdash; asymmetry matters more than absolute excursion.</li>
+        </ul>
+      </div>
+      <div class="clinical-pearl">
+        <div class="inner-label">Hoover's sign</div>
+        In severe COPD, the diaphragm is so flat that on inspiration it pulls the lower ribs <strong>inward</strong> instead of outward = paradoxical movement. This is <strong>Hoover's sign</strong> and is easily missed if you only check upper expansion. Always check lower ribs.
+      </div>
+      <div class="smart-tip">
+        <div class="inner-label">Pro technique</div>
+        Keep your thumbs <strong>hovering off the skin</strong> during expansion &mdash; they act as visual pointers. The examiner can clearly see asymmetry this way.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-green">6</div>
+      <div class="step-header-text">
+        <h3>Anterior Chest: Percussion</h3>
+        <div class="step-subtitle">Resonant, dull, or stony dull &mdash; the story in the tap</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Technique + Sequence</div>
+        <ul>
+          <li>Non-dominant middle finger pressed <strong>firmly</strong> in intercostal space, <strong>parallel to ribs</strong>.</li>
+          <li>Strike the <strong>middle phalanx</strong> with the <strong>flexed tip</strong> of dominant middle/index finger.</li>
+          <li>Movement from the <strong>wrist</strong>, NOT the elbow &mdash; like flicking water off your hand.</li>
+          <li><strong>Sequence:</strong> start supraclavicular fossae &rarr; down the chest &rarr; <strong>always R vs L at same level</strong> before moving down &rarr; then axillae.</li>
+        </ul>
+      </div>
+      <div class="never-forget">
+        <div class="inner-label">What the sounds mean</div>
+        <strong>Resonant</strong> = normal air-filled lung.<br>
+        <strong>Hyper-resonant</strong> = pneumothorax (air trapping).<br>
+        <strong>Dull</strong> = consolidation (pneumonia), collapse.<br>
+        <strong>Stony dull</strong> = pleural effusion (fluid).<br>
+        <strong>Remember:</strong> left lower sternal edge is normally dull (the heart!) &mdash; this cardiac dullness is <em>lost</em> in hyperinflation (COPD).
+      </div>
+      <div class="examiner-loves">
+        <div class="inner-label">Look smart tip</div>
+        Percuss <strong>5 pairs</strong> on the anterior chest. If you find dullness at one base, say: "There is dullness to percussion at the right base, which could represent a pleural effusion or consolidation &mdash; I will correlate with breath sounds." Examiners love you thinking in real time.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-orange">7</div>
+      <div class="step-header-text">
+        <h3>Anterior Chest: Auscultation + Vocal Resonance</h3>
+        <div class="step-subtitle">Listen, compare, then get the patient to speak</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Technique</div>
+        <ul>
+          <li>Diaphragm of stethoscope (unless cachectic/hairy chest &rarr; use bell).</li>
+          <li>"Please breathe in and out deeply through your <strong>open mouth</strong>."</li>
+          <li>Same sites as percussion: R vs L, top to bottom, then axillae.</li>
+          <li>Listen for: <strong>breath sounds</strong> (vesicular vs bronchial), <strong>added sounds</strong> (wheeze, crackles, rub).</li>
+          <li>Then <strong>vocal resonance</strong>: "Please say 'one, one, one' each time I place my stethoscope." Compare R vs L.</li>
+        </ul>
+      </div>
+      <div class="clinical-pearl">
+        <div class="inner-label">The three added sounds</div>
+        <strong>Wheeze:</strong> musical, mostly expiratory. Polyphonic = asthma/COPD. Monophonic fixed = think bronchial tumour.<br><br>
+        <strong>Crackles:</strong> Fine + inspiratory + bibasal = pulmonary fibrosis. Coarse + changing with cough = secretions (bronchiectasis/pneumonia). Fine bibasal + peripheral oedema = heart failure.<br><br>
+        <strong>Pleural rub:</strong> creaking/grating, both phases, superficial &mdash; like sandpaper. Think infection or PE with infarction.
+      </div>
+      <div class="never-forget">
+        <div class="inner-label">Vocal resonance cheat sheet</div>
+        <strong>Increased VR</strong> = consolidation or fibrosis (sound travels better through solid/stiff lung).<br>
+        <strong>Decreased VR</strong> = effusion or pneumothorax (air/fluid blocks sound).<br>
+        <strong>Whispering pectoriloquy</strong> = whispered voice heard clearly = consolidation. If you demonstrate this, you look extremely polished.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-purple">8</div>
+      <div class="step-header-text">
+        <h3>Posterior Chest</h3>
+        <div class="step-subtitle">"Please sit forward" &mdash; now repeat the PPA sequence</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Full posterior sequence</div>
+        <ul>
+          <li><strong>Sit patient forward</strong> &mdash; "Can you lean forward for me? I'm going to examine the back of your chest."</li>
+          <li><strong>Inspect</strong> &mdash; scars (thoracotomy, pleural biopsy/drain sites), asymmetry, kyphoscoliosis.</li>
+          <li><strong>Palpate</strong> &mdash; cervical lymph nodes from behind. Then upper + lower expansion posteriorly.</li>
+          <li><strong>Percuss</strong> &mdash; ask patient to fold arms across front (moves scapulae laterally). Percuss a few cm lateral to spine. R vs L, top to bottom.</li>
+          <li><strong>Auscultate</strong> &mdash; same sites. Deep breaths through open mouth. R vs L.</li>
+          <li><strong>Vocal resonance</strong> &mdash; "Say 'one, one, one'" at each site. R vs L.</li>
+        </ul>
+      </div>
+      <div class="smart-tip">
+        <div class="inner-label">Why the posterior matters more than you think</div>
+        The lungs extend much <strong>lower posteriorly</strong> (approaching the 12th rib on full inspiration). Most pathology &mdash; effusions, basal consolidation, fibrosis &mdash; is best detected from behind. <strong>Never rush the posterior exam.</strong>
+      </div>
+      <div class="examiner-loves">
+        <div class="inner-label">Look smart tip</div>
+        While the patient is sitting forward, quickly check for <strong>sacral oedema</strong> by pressing over the sacrum for 5 seconds. Say: "I'm also checking for sacral oedema, which may indicate right heart failure or fluid overload." Two extra marks for one move.
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-pink">9</div>
+      <div class="step-header-text">
+        <h3>Completing the Examination</h3>
+        <div class="step-subtitle">The "I would also like to..." that seals the deal</div>
+      </div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <div class="what-to-do">
+        <div class="inner-label">Say this (mnemonic: "STOP")</div>
+        <ul>
+          <li><strong>S</strong>putum pot &mdash; "I would like to inspect the sputum pot for colour and volume."</li>
+          <li><strong>T</strong>emperature &amp; SpO2 &mdash; "I would check pulse oximetry and temperature."</li>
+          <li><strong>O</strong>edema &mdash; "I would check for ankle oedema and examine the calves."</li>
+          <li><strong>P</strong>eak flow + CXR &mdash; "I would like to see the peak flow reading, a chest X-ray, and any ABG results."</li>
+        </ul>
+      </div>
+      <div class="examiner-loves">
+        <div class="inner-label">The power summary</div>
+        When asked to present, use this template:<br><br>
+        <em>"On examination, [patient name] is a [comfortable/distressed] [age]-year-old [man/woman], sitting at 45 degrees, with [oxygen/inhalers/no paraphernalia] at the bedside. Respiratory rate is [X]. On inspection of the hands, I noted [findings]. Examination of the chest revealed [findings on palpation, percussion, auscultation]. In summary, the findings are consistent with [diagnosis], and my differentials include [list]. I would like to confirm with [investigations]."</em>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ SECTION 3: FINDINGS MAP ============ -->
+<div class="section" id="findings">
+  <div class="section-title">The Diagnosis Matrix</div>
+  <div class="section-desc">When you find X on exam, think Y. This table is OSCE gold.</div>
+
+  <div style="overflow-x: auto;">
+    <table class="findings-table">
+      <tr>
+        <th>Condition</th>
+        <th>Expansion</th>
+        <th>Trachea</th>
+        <th>Percussion</th>
+        <th>Breath Sounds</th>
+        <th>VR</th>
+        <th>Added Sounds</th>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--accent)">Consolidation (Pneumonia)</strong></td>
+        <td>Reduced (affected side)</td>
+        <td>Central</td>
+        <td>Dull</td>
+        <td>Bronchial</td>
+        <td>Increased</td>
+        <td>Coarse crackles, pleural rub</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--green)">Pleural Effusion</strong></td>
+        <td>Reduced (affected side)</td>
+        <td>Pushed away (if massive)</td>
+        <td>Stony dull</td>
+        <td>Absent/reduced</td>
+        <td>Decreased</td>
+        <td>None (maybe crackles above effusion)</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--orange)">Pneumothorax</strong></td>
+        <td>Reduced (affected side)</td>
+        <td>Pushed away (if tension)</td>
+        <td>Hyper-resonant</td>
+        <td>Absent/reduced</td>
+        <td>Decreased</td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--purple)">Lobar Collapse</strong></td>
+        <td>Reduced (affected side)</td>
+        <td>Pulled towards</td>
+        <td>Dull</td>
+        <td>Reduced</td>
+        <td>Decreased</td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--pink)">COPD / Emphysema</strong></td>
+        <td>Globally reduced, Hoover's sign</td>
+        <td>Central</td>
+        <td>Hyper-resonant (loss of cardiac dullness)</td>
+        <td>Quiet, prolonged expiration</td>
+        <td>Decreased</td>
+        <td>Polyphonic wheeze</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--red)">Pulmonary Fibrosis</strong></td>
+        <td>Reduced bilaterally</td>
+        <td>Central</td>
+        <td>Normal</td>
+        <td>Normal/bronchial</td>
+        <td>Normal/increased</td>
+        <td>Fine end-inspiratory "Velcro" crackles at bases</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--accent)">Asthma (acute)</strong></td>
+        <td>Reduced bilaterally</td>
+        <td>Central</td>
+        <td>Normal/hyper-resonant</td>
+        <td>Reduced</td>
+        <td>Normal</td>
+        <td>Widespread polyphonic expiratory wheeze</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="master-mnemonic" style="margin-top: 24px; border-color: rgba(236,72,153,0.2); background: linear-gradient(135deg, rgba(236,72,153,0.08), rgba(168,85,247,0.05));">
+    <h2>Quick-Fire Differentiation Tricks</h2>
+    <div class="subtitle" style="color: var(--pink);">The 3 conditions examiners test most</div>
+    <div class="clinical-pearl" style="margin-top:12px">
+      <div class="inner-label">Effusion vs Pneumothorax</div>
+      Both have reduced breath sounds. <strong>Percussion decides it all:</strong> stony dull = effusion, hyper-resonant = pneumothorax. That's it.
+    </div>
+    <div class="clinical-pearl" style="margin-top:12px">
+      <div class="inner-label">Consolidation vs Collapse</div>
+      Both are dull to percussion. <strong>Trachea and VR decide:</strong> consolidation = trachea central + increased VR + bronchial breathing. Collapse = trachea pulled towards + decreased VR + reduced breath sounds.
+    </div>
+    <div class="clinical-pearl" style="margin-top:12px">
+      <div class="inner-label">COPD vs Fibrosis</div>
+      Both cause breathlessness. <strong>Percussion and crackles decide:</strong> COPD = hyper-resonant + wheeze. Fibrosis = normal percussion + fine Velcro crackles at bases + clubbing.
+    </div>
+  </div>
+</div>
+
+<!-- ============ SECTION 4: LOOK SMART ============ -->
+<div class="section" id="smart">
+  <div class="section-title">How to Look Like a Registrar</div>
+  <div class="section-desc">These are the moves that separate "pass" from "distinction."</div>
+
+  <div class="step-card open">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-pink">1</div>
+      <div class="step-header-text"><h3>Narrate as You Go</h3></div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body" style="max-height:3000px"><div class="step-content">
+      <div class="examiner-loves">
+        <div class="inner-label">The technique</div>
+        Don't examine in silence. Quietly state your findings: "Expansion is symmetrical... percussion is resonant bilaterally... vesicular breath sounds with no added sounds..." This shows the examiner you're <strong>interpreting as you go</strong>, not just going through motions.
+      </div>
+    </div></div>
+  </div>
+
+  <div class="step-card open">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-green">2</div>
+      <div class="step-header-text"><h3>The "While I'm Here" Power Moves</h3></div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body" style="max-height:3000px"><div class="step-content">
+      <div class="smart-tip">
+        <div class="inner-label">These take 3 extra seconds each and win you big marks</div>
+        <ul>
+          <li>While at the hands &rarr; <strong>mention pack-year calculation</strong> if tar staining present: "suggesting significant smoking history &mdash; I would calculate pack-years."</li>
+          <li>While at the face &rarr; <strong>check for cushingoid features</strong> (long-term steroid use for COPD/asthma).</li>
+          <li>While at the neck &rarr; <strong>mention "I note no Pemberton's sign"</strong> (raising arms causing facial congestion = retrosternal goitre causing SVC compression).</li>
+          <li>While posterior &rarr; <strong>check sacral oedema</strong>.</li>
+          <li>At the end &rarr; <strong>mention you'd check calves for DVT</strong> (PE risk) and <strong>ankle oedema</strong> (cor pulmonale).</li>
+        </ul>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="step-card open">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-purple">3</div>
+      <div class="step-header-text"><h3>Examiner Bait: Phrases That Impress</h3></div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body" style="max-height:3000px"><div class="step-content">
+      <div class="examiner-loves">
+        <div class="inner-label">Drop these naturally</div>
+        <ul>
+          <li>"I note <strong>no evidence of CO2 retention</strong> &mdash; no flapping tremor or bounding pulse."</li>
+          <li>"The <strong>cricosternal distance is reduced to approximately two finger breadths</strong>, suggesting chronic hyperinflation."</li>
+          <li>"There is <strong>stony dullness</strong> at the right base with absent breath sounds and absent vocal resonance, consistent with a right-sided <strong>pleural effusion</strong>."</li>
+          <li>"I note <strong>fine end-inspiratory crackles bilaterally at the bases</strong>, which do not clear with coughing &mdash; this is consistent with <strong>interstitial lung disease</strong>."</li>
+          <li>"I would like to complete my examination by checking <strong>peripheral oxygen saturations</strong> and requesting a <strong>chest radiograph</strong>."</li>
+        </ul>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="step-card open">
+    <div class="step-header" onclick="toggleStep(this)">
+      <div class="step-number bg-orange">4</div>
+      <div class="step-header-text"><h3>The 5 Deadly Sins of Resp Exam</h3></div>
+      <div class="step-chevron">&#9662;</div>
+    </div>
+    <div class="step-body" style="max-height:3000px"><div class="step-content">
+      <div class="never-forget">
+        <div class="inner-label">Never do these</div>
+        <ul>
+          <li><strong>Forgetting to wash hands</strong> at the start AND end. (Automatic fail in some schools.)</li>
+          <li><strong>Percussing without comparing sides.</strong> Top to bottom without R vs L = amateur.</li>
+          <li><strong>Listening through clothing.</strong> The chest must be exposed.</li>
+          <li><strong>Skipping vocal resonance.</strong> It only takes 30 seconds and confirms your auscultation findings.</li>
+          <li><strong>Not saying "I would also like to..."</strong> at the end. Leaving without completing = lost marks on every OSCE.</li>
+        </ul>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============ SECTION 5: QUIZ ============ -->
+<div class="section" id="quiz">
+  <div class="section-title">Test Yourself</div>
+  <div class="section-desc">Quick-fire scenario questions. Tap to answer.</div>
+
+  <div class="quiz-card" id="q1">
+    <h3>Q1: You find stony dullness at the right base with absent breath sounds and absent vocal resonance. Trachea is pushed to the left. What's the diagnosis?</h3>
+    <button class="quiz-option" onclick="quizAnswer(this,'q1',false)">Right-sided pneumonia</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q1',true)">Massive right pleural effusion</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q1',false)">Right pneumothorax</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q1',false)">Right lower lobe collapse</button>
+    <div class="quiz-explanation" id="q1-exp"><strong>Massive right pleural effusion.</strong> Stony dull + absent BS + absent VR + trachea pushed away = effusion. Pneumothorax would be hyper-resonant. Collapse would pull the trachea towards. Pneumonia would have bronchial breathing and increased VR.</div>
+  </div>
+
+  <div class="quiz-card" id="q2">
+    <h3>Q2: A 65-year-old smoker has a barrel chest, reduced cricosternal distance, and you hear quiet breath sounds with polyphonic wheeze. You can't feel the apex beat. What's the most likely diagnosis?</h3>
+    <button class="quiz-option" onclick="quizAnswer(this,'q2',false)">Asthma</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q2',true)">COPD with hyperinflation</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q2',false)">Bilateral pleural effusions</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q2',false)">Pulmonary fibrosis</button>
+    <div class="quiz-explanation" id="q2-exp"><strong>COPD with hyperinflation.</strong> Barrel chest + reduced cricosternal distance + impalpable apex beat (because lingula overlies the heart) + quiet breath sounds + polyphonic wheeze in a smoker = textbook COPD. The hyperinflated lungs expand between the heart and chest wall.</div>
+  </div>
+
+  <div class="quiz-card" id="q3">
+    <h3>Q3: You find unilateral clubbing, ptosis, and miosis on the same side. What ties these together?</h3>
+    <button class="quiz-option" onclick="quizAnswer(this,'q3',false)">Mesothelioma</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q3',true)">Pancoast tumour (lung apex)</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q3',false)">Tuberculosis</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q3',false)">Bronchiectasis</button>
+    <div class="quiz-explanation" id="q3-exp"><strong>Pancoast tumour.</strong> An apical lung tumour invades the sympathetic chain (causing Horner's syndrome: ptosis + miosis + anhidrosis) and can also damage the T1 nerve root (causing small muscle wasting). Clubbing is from the underlying lung cancer itself.</div>
+  </div>
+
+  <div class="quiz-card" id="q4">
+    <h3>Q4: You percuss the left lower sternal edge and get resonance instead of the expected dullness. What does this suggest?</h3>
+    <button class="quiz-option" onclick="quizAnswer(this,'q4',false)">Left pneumothorax</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q4',true)">Hyperinflation (COPD) &mdash; loss of cardiac dullness</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q4',false)">Dextrocardia</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q4',false)">Normal finding</button>
+    <div class="quiz-explanation" id="q4-exp"><strong>Hyperinflation (COPD).</strong> Normally the right ventricle causes dullness at the left lower sternal edge. In hyperinflated COPD patients, the lingula expands between the heart and chest wall, causing loss of cardiac dullness &mdash; a classic sign of severe hyperinflation.</div>
+  </div>
+
+  <div class="quiz-card" id="q5">
+    <h3>Q5: Fine, end-inspiratory "Velcro-like" crackles at both bases that don't clear with coughing + finger clubbing. Diagnosis?</h3>
+    <button class="quiz-option" onclick="quizAnswer(this,'q5',false)">Heart failure</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q5',false)">Bronchiectasis</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q5',true)">Pulmonary fibrosis (interstitial lung disease)</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q5',false)">Pneumonia</button>
+    <div class="quiz-explanation" id="q5-exp"><strong>Pulmonary fibrosis.</strong> Fine inspiratory "Velcro" crackles at both bases that don't clear with coughing + clubbing is the classic presentation of idiopathic pulmonary fibrosis. Heart failure crackles are more coarse, shift with position, and wouldn't cause clubbing. Bronchiectasis has coarse crackles + productive cough.</div>
+  </div>
+
+  <div class="quiz-card" id="q6">
+    <h3>Q6: You hear a coarse flapping tremor (asterixis) on testing the outstretched hands. What does this indicate?</h3>
+    <button class="quiz-option" onclick="quizAnswer(this,'q6',false)">Salbutamol overuse</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q6',false)">Anxiety</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q6',true)">CO2 retention (Type 2 respiratory failure)</button>
+    <button class="quiz-option" onclick="quizAnswer(this,'q6',false)">Hypoxia</button>
+    <div class="quiz-explanation" id="q6-exp"><strong>CO2 retention.</strong> Asterixis (coarse flapping tremor) is a sign of hypercapnia (elevated PaCO2) seen in type 2 respiratory failure, often in COPD exacerbations. Fine tremor would suggest beta-agonist effects. Always request an ABG if you find this sign.</div>
+  </div>
+</div>
+
+<!-- ============ SECTION 6: CHECKLIST ============ -->
+<div class="section" id="checklist">
+  <div class="section-title">Rapid-Fire Checklist</div>
+  <div class="section-desc">Use this to practise. Tap each step as you complete it. Target: under 8 minutes.</div>
+
+  <div class="checklist-progress">
+    <strong id="checkCount">0 / 28 steps</strong>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <button class="reset-btn" onclick="resetChecklist()">Reset Checklist</button>
+  </div>
+
+  <div id="checklistContainer"></div>
+</div>
+
+<div style="height:80px"></div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Step card toggle
+function toggleStep(header) {
+  header.closest('.step-card').classList.toggle('open');
+}
+
+// Quiz
+function quizAnswer(btn, qId, correct) {
+  const card = document.getElementById(qId);
+  if (card.dataset.answered) return;
+  card.dataset.answered = 'true';
+  if (correct) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    card.querySelectorAll('.quiz-option').forEach(o => {
+      if (!o.classList.contains('wrong')) {
+        // find correct one
+      }
+    });
+    // Highlight correct
+    const opts = card.querySelectorAll('.quiz-option');
+    opts.forEach((o, i) => {
+      o.onclick = null;
+    });
+    // Mark correct option
+    opts.forEach(o => {
+      if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) {
+        o.classList.add('correct');
+      }
+    });
+  }
+  document.getElementById(qId + '-exp').style.display = 'block';
+}
+
+// Checklist
+const checklistItems = [
+  "Wash hands / alcohol gel",
+  "Introduce yourself + gain consent",
+  "Position patient at 45 degrees, expose chest",
+  "Ask about pain before examining",
+  "Comment on bedside paraphernalia (O2, inhalers, sputum pot)",
+  "Observe from end of bed: chest shape, symmetry, scars",
+  "Count respiratory rate (15s x 4) while pretending to check pulse",
+  "Note breathing pattern: accessory muscles, pursed lips, I:E ratio",
+  "Examine hands: clubbing (Schamroth's sign)",
+  "Examine hands: tar staining, cyanosis, small muscle wasting",
+  "Test for tremor (arms outstretched, wrists extended)",
+  "Test for flapping tremor / asterixis (wrists dorsiflexed, 30s)",
+  "Face: check conjunctivae for anaemia",
+  "Face: check tongue for central cyanosis",
+  "Face: check pupils for Horner's syndrome (ptosis + miosis)",
+  "Neck: assess JVP with tangential light",
+  "Neck: check tracheal position (one finger in sternal notch)",
+  "Neck: measure cricosternal distance (normal = 3 fingers)",
+  "ANTERIOR - Palpate: apex beat + RV heave",
+  "ANTERIOR - Palpate: expansion upper + lower zones",
+  "ANTERIOR - Percuss: R vs L, top to bottom, then axillae",
+  "ANTERIOR - Auscultate: R vs L, top to bottom, then axillae",
+  "ANTERIOR - Vocal resonance: 'say one, one, one'",
+  "POSTERIOR - Sit patient forward, inspect back",
+  "POSTERIOR - Palpate: lymph nodes + expansion",
+  "POSTERIOR - Percuss: arms folded, R vs L, top to bottom",
+  "POSTERIOR - Auscultate + vocal resonance",
+  "Complete: sacral oedema, ankle oedema, sputum pot, SpO2, CXR, thank + wash hands"
+];
+
+const container = document.getElementById('checklistContainer');
+checklistItems.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'checklist-item';
+  div.innerHTML = `<div class="check-box"></div><span>${item}</span>`;
+  div.addEventListener('click', () => {
+    div.classList.toggle('checked');
+    div.querySelector('.check-box').innerHTML = div.classList.contains('checked') ? '&#10003;' : '';
+    updateProgress();
+  });
+  container.appendChild(div);
+});
+
+function updateProgress() {
+  const checked = document.querySelectorAll('.checklist-item.checked').length;
+  const total = checklistItems.length;
+  document.getElementById('checkCount').textContent = `${checked} / ${total} steps`;
+  document.getElementById('progressFill').style.width = `${(checked/total)*100}%`;
+}
+
+function resetChecklist() {
+  document.querySelectorAll('.checklist-item').forEach(item => {
+    item.classList.remove('checked');
+    item.querySelector('.check-box').innerHTML = '';
+  });
+  updateProgress();
+}
+</script>
+</body>
+</html>
