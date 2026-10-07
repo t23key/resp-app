@@ -400,6 +400,11 @@ html.hostmode{font-size:clamp(11px,calc(.82vw + .32vh),26px)}
 .presets .chipx:hover{background:var(--yellow)}
 .hmsg .row{display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap}
 @media (max-width:900px){.hmsg{position:fixed;left:10px;right:10px;top:70px;width:auto}.msginp{font-size:16px}.msgpill{max-width:100%}}
+
+/* ---- leaderboard photo ---- */
+.postercard{max-width:min(34em,94vw)!important;max-height:94vh}
+.posterwrap{flex:1;min-height:0;overflow:auto;border:var(--b) solid var(--ink);border-radius:var(--r);background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.posterwrap img{display:block;width:100%;height:auto}
 </style>
 </head>
 <body>
@@ -919,14 +924,131 @@ function startHost(quiz) {
     H.rankOrder = arr.map(function (p) { return p.id; });
   }
   function goLb() { H.ph = 'lb'; send(); render(); SFX.whoosh(); }
-  function goFin() { H.ph = 'fin'; H.finAt = now(); send(); render(); }
+  function goFin() {
+    H.ph = 'fin'; H.finAt = now(); send(); render();
+    setTimeout(function () { if (H.ph === 'fin' && !$('.modal')) toast('📸 Your leaderboard photo is ready. Tap the yellow button to share it.', 3600); }, 7000);
+  }
+
+  /* ----- shareable leaderboard photo (drawn on a canvas, no libraries) ----- */
+  function makePoster() {
+    var need = ['700 96px Oswald', '600 34px Oswald', '800 34px "Public Sans"', '700 26px "Public Sans"'];
+    var fontsReady = D.fonts && D.fonts.load ? Promise.all(need.map(function (f) { return D.fonts.load(f); })).catch(function () {}) : Promise.resolve();
+    return fontsReady.then(function () { return new Promise(function (resolve) {
+      var arr = ranked(), all = active(), WD = 1080, rest = arr.slice(3), i, j;
+      var cols = rest.length > 10 ? 2 : 1, rows = Math.min(Math.ceil(rest.length / cols), 16), shown = Math.min(rest.length, rows * cols), more = rest.length - shown;
+      var ROWH = 64, listTop = 1182, HT = Math.max(1350, listTop + (rest.length ? 46 + rows * ROWH + (more ? 54 : 0) : 0) + 110);
+      var cv = D.createElement('canvas'); cv.width = WD; cv.height = HT;
+      var g = cv.getContext('2d');
+      var INK = '#161B3D', INK2 = '#3B4160', PAPER = '#FFFDF7', YEL = '#FFE14D', COR = '#FF6B6B', TEAL = '#2EC4B6', VIO = '#A78BFA';
+      var EMO = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"';
+      var OSW = 'Oswald,"Arial Narrow",Impact,' + EMO + ',sans-serif', PUB = '"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",Tahoma,' + EMO + ',sans-serif';
+      function fitText(s, maxW) { if (g.measureText(s).width <= maxW) return s; var cps = Array.from(s); while (cps.length > 1 && g.measureText(cps.join('') + '…').width > maxW) cps.pop(); return cps.join('') + '…'; }
+      function text(s, x, y, font, color, align, maxW, ls) {
+        g.font = font; g.fillStyle = color || INK; g.textAlign = align || 'left'; g.textBaseline = 'alphabetic';
+        if ('letterSpacing' in g) g.letterSpacing = ls || '0px';
+        if (maxW) s = fitText(s, maxW); g.fillText(s, x, y);
+        var w = g.measureText(s).width; if ('letterSpacing' in g) g.letterSpacing = '0px'; return w;
+      }
+      function box(x, y, w, hh, fill, sh, bw) { sh = sh == null ? 10 : sh; bw = bw || 5; g.fillStyle = INK; if (sh) g.fillRect(x + sh, y + sh, w, hh); g.fillRect(x, y, w, hh); g.fillStyle = fill; g.fillRect(x + bw, y + bw, w - 2 * bw, hh - 2 * bw); }
+      // paper + dot grid + confetti
+      g.fillStyle = '#FFFBEF'; g.fillRect(0, 0, WD, HT);
+      g.fillStyle = 'rgba(22,27,61,.12)';
+      for (var y = 12; y < HT; y += 24) for (var x = 12; x < WD; x += 24) { g.beginPath(); g.arc(x, y, 1.7, 0, 6.283); g.fill(); }
+      var seed = 7; function sr() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+      var zones = [[8, 130, 52, 870], [1020, 130, 52, 870], [90, 505, 260, 120], [730, 505, 270, 170]];
+      for (i = 0; i < 64; i++) { var zz = zones[i % 4]; g.save(); g.translate(zz[0] + sr() * zz[2], zz[1] + sr() * zz[3]); g.rotate(sr() * 6.28); g.fillStyle = [COR, TEAL, YEL, VIO, INK][i % 5]; if (i % 3) g.fillRect(-7, -4, 14, 8); else { g.beginPath(); g.arc(0, 0, 5, 0, 6.283); g.fill(); } g.restore(); }
+      // header
+      g.font = '600 34px ' + OSW; if ('letterSpacing' in g) g.letterSpacing = '5px';
+      var tagW = g.measureText('SMA · LIVE QUIZ').width + 48; if ('letterSpacing' in g) g.letterSpacing = '0px';
+      box(64, 50, tagW, 66, INK, 0);
+      text('SMA · LIVE QUIZ', 88, 96, '600 34px ' + OSW, YEL, 'left', 0, '5px');
+      text(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase(), WD - 64, 96, '600 32px ' + OSW, INK, 'right', 0, '3px');
+      // title card
+      var winners = arr.filter(function (p) { return p.rk === 1 && p.scR > 0; });
+      g.save(); g.translate(WD / 2, 290); g.rotate(-0.025);
+      box(-468, -122, 936, 244, YEL, 14, 6);
+      var l1 = winners.length ? 'WINNER WINNER' : 'NO WINNER,', l2 = winners.length ? 'CHICKEN DINNER 🍗' : 'NO DINNER 🍗';
+      var fs = 104; g.font = '700 ' + fs + 'px ' + OSW; while (fs > 60 && Math.max(g.measureText(l1).width, g.measureText(l2).width) > 860) { fs -= 4; g.font = '700 ' + fs + 'px ' + OSW; }
+      text(l1, 0, -18, '700 ' + fs + 'px ' + OSW, INK, 'center');
+      text(l2, 0, fs - 6, '700 ' + fs + 'px ' + OSW, INK, 'center');
+      g.restore();
+      var sub = winners.length > 2 ? 'A ' + winners.length + '-way tie at the top! 👏' : winners.length ? 'Congrats, ' + winners.map(function (p) { return p.n; }).join(' & ') + '! 👏' : 'Nobody scored. Impressive, in a way.';
+      text(sub, WD / 2, 478, '800 38px ' + PUB, INK, 'center', 900);
+      // podium
+      var base = 1010, colW = 282, gap = 33, x0 = (WD - 3 * colW - 2 * gap) / 2;
+      var spots = [[arr[1], x0, 170, TEAL], [arr[0], x0 + colW + gap, 230, YEL], [arr[2], x0 + 2 * (colW + gap), 125, COR]];
+      g.fillStyle = INK; g.fillRect(48, base, WD - 96, 10);
+      spots.forEach(function (s, k) {
+        var p = s[0]; if (!p) return;
+        var x = s[1], top = base - s[2], cx = x + colW / 2, first = k === 1;
+        box(x, top, colW, s[2] + 5, s[3], 0);
+        text('#' + p.rk, cx, top + 96, '700 84px ' + OSW, INK, 'center');
+        text(fmt(p.scR) + ' PTS', cx, top - 22, '600 34px ' + OSW, INK, 'center', colW - 10, '2px');
+        var nfs = 36; g.font = '800 ' + nfs + 'px ' + PUB; while (nfs > 26 && g.measureText(p.n).width > colW - 10) { nfs -= 2; g.font = '800 ' + nfs + 'px ' + PUB; }
+        text(p.n, cx, top - 66, '800 ' + nfs + 'px ' + PUB, INK, 'center', colW - 10);
+        text(p.a, cx, top - (first ? 124 : 118), (first ? 96 : 76) + 'px ' + EMO + ',sans-serif', INK, 'center');
+        if (first) text('👑', cx, top - 216, '60px ' + EMO + ',sans-serif', INK, 'center');
+      });
+      // stat chips
+      var tot = 0, okk = 0, ff = null;
+      all.forEach(function (p) { for (j = 0; j < NQ; j++) { var a = p.ans[j]; tot++; if (a && a.ok) { okk++; if (!ff || a.e < ff.e) ff = { n: p.n, e: a.e }; } } });
+      var chips = [[String(all.length), '👥 player' + (all.length === 1 ? '' : 's')], [(tot ? Math.round(100 * okk / tot) : 0) + '%', '🎯 correct answers'], [ff ? (ff.e / 1000).toFixed(1) + 's' : '—', '⚡ ' + (ff ? ff.n : 'nobody')], [fmt(H.claps), '👏 clap' + (H.claps === 1 ? '' : 's')]];
+      var cw = (WD - 128 - 3 * 18) / 4;
+      chips.forEach(function (c, k) { var cx = 64 + k * (cw + 18); box(cx, 1046, cw, 100, k % 2 ? PAPER : '#FFF6C9', 6, 4); text(c[0], cx + cw / 2, 1100, '600 46px ' + OSW, INK, 'center', cw - 20); text(c[1], cx + cw / 2, 1131, '700 21px ' + PUB, INK2, 'center', cw - 22); });
+      // the rest of the class
+      if (rest.length) {
+        text('THE REST OF THE CLASS', 64, listTop + 26, '600 28px ' + OSW, INK2, 'left', 0, '4px');
+        var lw = cols === 2 ? (WD - 128 - 24) / 2 : WD - 128;
+        for (i = 0; i < shown; i++) {
+          var p = rest[i], c = cols === 2 ? Math.floor(i / rows) : 0, r = cols === 2 ? i % rows : i;
+          var rx = 64 + c * (lw + 24), ry = listTop + 46 + r * ROWH;
+          box(rx, ry, lw, ROWH - 12, i % 2 ? PAPER : '#FFF6C9', 4, 3);
+          text('#' + p.rk, rx + 18, ry + 38, '600 30px ' + OSW, INK, 'left');
+          text(p.a, rx + 92, ry + 38, '28px ' + EMO + ',sans-serif', INK, 'left');
+          var sw = text(fmt(p.scR), rx + lw - 18, ry + 38, '600 30px ' + OSW, INK, 'right');
+          text(p.n, rx + 136, ry + 37, '800 27px ' + PUB, INK, 'left', lw - 136 - sw - 40);
+        }
+        if (more) text('+ ' + more + ' more brilliant minds', WD / 2, listTop + 46 + rows * ROWH + 34, '800 28px ' + PUB, INK2, 'center');
+      }
+      // footer
+      g.fillStyle = INK; g.fillRect(0, HT - 74, WD, 74);
+      text('🧠 5 questions on spinal muscular atrophy', 64, HT - 27, '700 26px ' + PUB, PAPER, 'left', 560);
+      text((location.host + location.pathname).replace(/\/(index\.html)?$/, ''), WD - 64, HT - 27, '700 26px ' + PUB, YEL, 'right', 420);
+      if (cv.toBlob) cv.toBlob(function (b) { resolve(b); }, 'image/png');
+      else resolve(null);
+    }); });
+  }
+  function sharePoster() {
+    if ($('.modal')) return;
+    toast('Painting your masterpiece… 🎨', 1300);
+    makePoster().then(function (blob) {
+      if (!blob) { toast('This browser can’t paint the photo 😩 Try Chrome.'); return; }
+      var url = URL.createObjectURL(blob), file = null, name = 'SMA-quiz-leaderboard.png';
+      try { file = new File([blob], name, { type: 'image/png' }); } catch (e) {}
+      var canFile = false; try { canFile = !!(file && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) {}
+      var ws = ranked().filter(function (p) { return p.rk === 1 && p.scR > 0; }).map(function (p) { return p.n; });
+      var msg = 'SMA live quiz results 🍗 ' + (ws.length ? 'Winner winner chicken dinner: ' + ws.join(' & ') + '!' : 'Final leaderboard');
+      var close = function () { ov.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000); };
+      var row = h('div.row');
+      if (canFile) row.appendChild(h('button.btn.small', { onclick: function () { navigator.share({ files: [file], title: 'SMA live quiz', text: msg }).catch(function () {}); } }, '📤 Share'));
+      row.appendChild(h('button.btn.small' + (canFile ? '.ghost' : ''), { onclick: function () { var a = h('a', { href: url, download: name }); D.body.appendChild(a); a.click(); a.remove(); } }, '⬇ Download'));
+      if (W.ClipboardItem && navigator.clipboard && navigator.clipboard.write) row.appendChild(h('button.btn.small.ghost', { onclick: function (e) { var b = e.currentTarget; navigator.clipboard.write([new W.ClipboardItem({ 'image/png': blob })]).then(function () { b.textContent = 'Copied ✓'; }, function () { b.textContent = 'Copy blocked'; }); } }, '📋 Copy'));
+      row.appendChild(h('button.btn.small.ghost', { onclick: close }, 'Close'));
+      var ov = h('div.modal', { onclick: function (e) { if (e.target === ov) close(); } },
+        h('div.card.postercard', h('h3.disp', { style: { fontSize: '1.6em', lineHeight: '1.05' } }, '📸 Leaderboard photo'),
+          h('div.posterwrap', h('img', { src: url, alt: 'Final leaderboard photo' })),
+          h('p', { style: { fontWeight: '700', color: 'var(--ink2)', fontSize: '.95em' } }, canFile ? 'Share sends it straight to WhatsApp, Instagram, anywhere.' : 'Download it, or copy and paste it into the group chat.'),
+          row));
+      D.body.appendChild(ov);
+    });
+  }
   function next() {
     if (now() - lastNext < 450) return; lastNext = now();
     if (H.ph === 'lobby') startGame();
     else if (H.ph === 'q') { H.dl = Math.min(H.dl, now() - 1000); goRev(); }
     else if (H.ph === 'rev') { if (H.qi < NQ - 1) goLb(); else goFin(); }
     else if (H.ph === 'lb') { H.qi++; goPre(); }
-    else if (H.ph === 'fin') confirmModal('Play again?', 'Same players, scores back to zero.', 'Play again', playAgain);
+    else if (H.ph === 'fin') sharePoster();
   }
   function playAgain() {
     var keep = active(); clearBots(); H = fresh();
@@ -1195,7 +1317,7 @@ function startHost(quiz) {
     else if (ph === 'q') { b.textContent = 'End now ⏭'; b.className = 'btn ghost'; ui.left.textContent = 'Ends on its own when time runs out or everyone answers'; }
     else if (ph === 'rev') { b.textContent = H.qi < NQ - 1 ? 'Leaderboard ▶' : 'Final results 🏆'; ui.left.textContent = 'Space = next'; }
     else if (ph === 'lb') { b.textContent = 'Question ' + (H.qi + 2) + ' ▶'; ui.left.textContent = 'Space = next'; }
-    else { b.textContent = 'Play again ↺'; b.className = 'btn ghost'; ui.left.textContent = 'Phones can clap for the winner 👏 · M = mute'; }
+    else { b.textContent = '📸 Share leaderboard photo'; ui.left.textContent = 'Phones can clap for the winner 👏 · Play again lives in the ⋯ menu'; }
   }
   function onStatus(s) {
     conn = s; updConn();
@@ -1241,6 +1363,8 @@ function startHost(quiz) {
     ui.menu = h('div.hmenu.card',
       h('button', { onclick: function () { toggleMenu(); addBots(5); } }, '🤖 Add 5 test bots'),
       h('button', { onclick: function () { toggleMenu(); removeBots(); } }, '🧹 Remove bots'),
+      H.ph === 'fin' ? h('button', { onclick: function () { toggleMenu(); sharePoster(); } }, '📸 Leaderboard photo') : null,
+      H.ph === 'fin' ? h('button', { onclick: function () { toggleMenu(); confirmModal('Play again?', 'Same players, scores back to zero.', 'Play again', playAgain); } }, '🔁 Play again (same players)') : null,
       h('button', { onclick: function () { toggleMenu(); confirmModal('Reset the game?', 'Scores and players are wiped. Phones rejoin by themselves.', 'Reset', function () { clearBots(); H = fresh(); send(); render(); }); } }, '↺ Reset game'),
       h('button', { onclick: function () { toggleMenu(); confirmModal('Leave host mode?', 'This tab becomes a normal player page.', 'Leave', function () { sstore.del('smaq_hp'); sstore.del('smaq_role'); location.href = location.pathname; }); } }, '🚪 Exit host mode'));
     ui.shell.appendChild(ui.menu);
@@ -1279,7 +1403,8 @@ function startHost(quiz) {
   ticker(tick, 200);
   setInterval(botClaps, 1500);
   wake();
-  if (DEBUG) W.__h = { get: function () { return H; }, next: next, addBots: addBots, snap: snap };
+  if (DEBUG) W.__h = { get: function () { return H; }, next: next, addBots: addBots, snap: snap,
+    poster: function () { return makePoster().then(function (b) { return new Promise(function (res) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.readAsDataURL(b); }); }); } };
 }
 
 /* ======================================================================
